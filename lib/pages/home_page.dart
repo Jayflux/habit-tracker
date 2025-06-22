@@ -21,6 +21,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final HabitDatabases db = HabitDatabases();
   final TextEditingController _newHabitNameController = TextEditingController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool isLoading = true;
 
   @override
@@ -52,15 +53,16 @@ class _HomePageState extends State<HomePage> {
 
   void createNewHabit() {
     showDialog(
-        context: context,
-        builder: (context) {
-          return MyAlertBox(
-            controller: _newHabitNameController,
-            onSave: saveNewHabit,
-            onCancel: cancelDialogBox,
-            hintText: "Enter Habit Name..",
-          );
-        });
+      context: context,
+      builder: (context) {
+        return MyAlertBox(
+          controller: _newHabitNameController,
+          onSave: saveNewHabit,
+          onCancel: cancelDialogBox,
+          hintText: "Enter Habit Name..",
+        );
+      },
+    );
   }
 
   void saveNewHabit() async {
@@ -110,30 +112,69 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       drawer: CustomDrawer(username: widget.username),
       backgroundColor: Colors.white,
       floatingActionButton: MyFloatingActionButton(onPressed: createNewHabit),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : ListView(
+          : Column(
               children: [
-                MonthlySummary(
-                  datasets: db.heatMapDataSet,
-                  startDate: convertDateTimeToString(DateTime.now()),
+                // Sidebar Icon
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 25),
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    width: 45,
+                    height: 45,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF174E8F),
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(10),
+                        bottomRight: Radius.circular(10),
+                      ),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_forward_ios,
+                          color: Colors.white, size: 18),
+                      onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+                    ),
+                  ),
                 ),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: db.todaysHabitList.length,
-                  itemBuilder: (context, index) {
-                    return HabitTile(
-                      habitName: db.todaysHabitList[index][0],
-                      habitCompleted: db.todaysHabitList[index][1],
-                      onChanged: (value) => checkBoxTapped(value, index),
-                      settingsTapped: (context) => openHabitSettings(index),
-                      deleteTapped: (context) => deleteHabit(index),
-                    );
-                  },
+
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: ListView(
+                      children: [
+                        MonthlySummary(
+                          datasets: db.heatMapDataSet,
+                          startDate: convertDateTimeToString(DateTime.now()),
+                        ),
+                        const SizedBox(height: 16),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: db.todaysHabitList.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 12.0),
+                              child: HabitTile(
+                                habitName: db.todaysHabitList[index][0],
+                                habitCompleted: db.todaysHabitList[index][1],
+                                onChanged: (value) =>
+                                    checkBoxTapped(value, index),
+                                settingsTapped: (context) =>
+                                    openHabitSettings(index),
+                                deleteTapped: (context) => deleteHabit(index),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),

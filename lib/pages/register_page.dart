@@ -24,6 +24,10 @@ class RegisterPage extends StatelessWidget {
     final phoneNumber = phoneNumberController.text.trim();
     final fullName = fullNameController.text.trim();
 
+    final emailRegex =
+        RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$'); // validasi email umum
+    // final emailRegex = RegExp(r'^[\w-\.]+@gmail\.com$'); // jika hanya ingin @gmail.com saja
+
     if (username.isEmpty ||
         email.isEmpty ||
         password.isEmpty ||
@@ -31,6 +35,11 @@ class RegisterPage extends StatelessWidget {
         phoneNumber.isEmpty ||
         fullName.isEmpty) {
       Fluttertoast.showToast(msg: 'Please fill all fields');
+      return;
+    }
+
+    if (!emailRegex.hasMatch(email)) {
+      Fluttertoast.showToast(msg: 'Please enter a valid email');
       return;
     }
 
