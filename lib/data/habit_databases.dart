@@ -13,12 +13,13 @@ class HabitDatabases {
 
   Future<void> init() async {
     _connection = await MySqlConnection.connect(ConnectionSettings(
-        host: '10.0.2.2',
-        port: 3306,
-        user: 'habits_admin',
-        db: 'habits',
-        password: 'admin123',
-        timeout: Duration(seconds: 3600)));
+      host: '10.0.2.2',
+      port: 3306,
+      user: 'habits_admin',
+      db: 'habits',
+      password: 'admin123',
+      timeout: Duration(seconds: 3600),
+    ));
   }
 
   Future<void> createDefaultData(int userId) async {
@@ -28,19 +29,14 @@ class HabitDatabases {
     ];
 
     final startDate = todaysDateFormatted();
-    print("user id" + userId.toString());
 
-    final checkStartDate = await _connection.query(
-      'SELECT 1 FROM start_date WHERE user_id = ? AND date = ?',
+    // Cek apakah data habit untuk hari ini sudah ada
+    final checkHabit = await _connection.query(
+      'SELECT 1 FROM habits WHERE user_id = ? AND date = ?',
       [userId, startDate],
     );
-    print(checkStartDate.toString());
-    if (checkStartDate.isEmpty) {
-      await _connection.query(
-        'INSERT INTO start_date (user_id, date) VALUES (?, ?)',
-        [userId, startDate],
-      );
 
+    if (checkHabit.isEmpty) {
       for (var habit in todaysHabitList) {
         await _connection.query(
           'INSERT INTO habits (user_id, date, name, completed) VALUES (?, ?, ?, ?)',
@@ -52,101 +48,85 @@ class HabitDatabases {
 
   Future<void> loadData(int userId) async {
     final date = todaysDateFormatted();
-    print(userId);
     final result = await _connection.query(
-        'SELECT name, completed FROM habits WHERE date = ? AND user_id = ?',
-        [date, userId]);
+      'SELECT name, completed FROM habits WHERE date = ? AND user_id = ?',
+      [date, userId],
+    );
 
     if (result.isEmpty) {
       final currentResult = await _connection.query(
-          'SELECT DISTINCT name FROM habits WHERE user_id = ? ORDER BY id ASC',
-          [userId]);
+        'SELECT DISTINCT name FROM habits WHERE user_id = ? ORDER BY id ASC',
+        [userId],
+      );
       todaysHabitList = currentResult.map((row) => [row[0], false]).toList();
-      print("here");
     } else {
-      print("here1");
-
       todaysHabitList = result.map((row) => [row[0], row[1] == 1]).toList();
-      print(todaysHabitList.toString());
     }
   }
 
   Future<void> updateDatabase(int userId) async {
     final date = todaysDateFormatted();
 
-    await _connection
-        .query('DELETE FROM habits WHERE date = ? AND user_id = ?', [date, userId]);
+    await _connection.query(
+      'DELETE FROM habits WHERE date = ? AND user_id = ?',
+      [date, userId],
+    );
 
     for (var habit in todaysHabitList) {
       await _connection.query(
-          'INSERT INTO habits (user_id, date, name, completed) VALUES (?, ?, ?, ?)',
-          [userId, date, habit[0], habit[1] ? 1 : 0]);
+        'INSERT INTO habits (user_id, date, name, completed) VALUES (?, ?, ?, ?)',
+        [userId, date, habit[0], habit[1] ? 1 : 0],
+      );
     }
 
-    await calculateHabitPercentages(userId);
     await loadHeatMap(userId);
   }
 
-  Future<void> calculateHabitPercentages(int userId) async {
-    int countCompleted = 0;
-    for (int i = 0; i < todaysHabitList.length; i++) {
-      if (todaysHabitList[i][1] == true) {
-        countCompleted++;
-      }
-    }
-
-    String percent = todaysHabitList.isEmpty
-        ? '0.0'
-        : (countCompleted / todaysHabitList.length).toStringAsFixed(1);
-
-    final date = todaysDateFormatted();
-
-    final checkResult = await _connection.query(
-      'SELECT 1 FROM percentage_summary WHERE user_id = ? AND date = ?',
-      [userId, date],
+  Future<void> loadHeatMap(int userId) async {
+    // Ambil start_date dari tabel users
+    final startDateResult = await _connection.query(
+      'SELECT start_date FROM users WHERE id = ?',
+      [userId],
     );
 
-    if (checkResult.isNotEmpty) {
-      await _connection.query(
-        'UPDATE percentage_summary SET percentage = ? WHERE user_id = ? AND date = ?',
-        [percent, userId, date],
-      );
-    } else {
-      await _connection.query(
-        'INSERT INTO percentage_summary (user_id, date, percentage) VALUES (?, ?, ?)',
-        [userId, date, percent],
-      );
-    }
-  }
-
-  Future<void> loadHeatMap(int userId) async {
-    final startDateResult = await _connection
-        .query('SELECT date FROM start_date WHERE user_id = ?', [userId]);
     if (startDateResult.isEmpty) return;
 
-    final startDateStr = startDateResult.first[0];
-    DateTime startDate = createDateTimeObject(startDateStr);
+    // Ambil nilai dari hasil query
+    final rawDate = startDateResult.first[0];
+    late DateTime startDate;
+
+    // Deteksi apakah tipe data hasil query sudah DateTime atau String
+    if (rawDate is DateTime) {
+      startDate = rawDate;
+    } else if (rawDate is String) {
+      startDate = DateTime.parse(rawDate);
+    } else {
+      throw Exception(
+          "Invalid date format from database: ${rawDate.runtimeType}");
+    }
+
     int daysInBetween = DateTime.now().difference(startDate).inDays;
 
+    // Iterasi dari startDate hingga hari ini
     for (int i = 0; i <= daysInBetween; i++) {
       DateTime currentDate = startDate.add(Duration(days: i));
-      String dateStr = convertDateTimeToString(currentDate);
+      String dateStr =
+          convertDateTimeToString(currentDate); // format: yyyy-MM-dd
 
+      // Ambil persentase dari VIEW daily_habit_percentage
       final percentResult = await _connection.query(
-          'SELECT percentage FROM percentage_summary WHERE date = ? AND user_id = ?',
-          [dateStr, userId]);
+        'SELECT percentage FROM daily_habit_percentage WHERE date = ? AND user_id = ?',
+        [dateStr, userId],
+      );
 
       double strength = 0.0;
       if (percentResult.isNotEmpty) {
         strength = double.parse(percentResult.first[0].toString());
       }
 
-      int year = currentDate.year;
-      int month = currentDate.month;
-      int day = currentDate.day;
-
       final percentForEachDay = <DateTime, int>{
-        DateTime(year, month, day): (10 * strength).toInt(),
+        DateTime(currentDate.year, currentDate.month, currentDate.day):
+            (10 * strength).toInt(),
       };
 
       heatMapDataSet.addEntries(percentForEachDay.entries);
@@ -157,8 +137,16 @@ class HabitDatabases {
       String? phoneNumber, String? fullName) async {
     try {
       var results = await _connection.query(
-        'INSERT INTO users (username, email, password, active_flag, phone_number, full_name) VALUES (?, ?, ?, ?, ?, ?)',
-        [username, email, password, true, phoneNumber, fullName],
+        'INSERT INTO users (username, email, password, active_flag, phone_number, full_name, start_date) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [
+          username,
+          email,
+          password,
+          true,
+          phoneNumber,
+          fullName,
+          todaysDateFormatted()
+        ],
       );
       return results.affectedRows == 1;
     } catch (e) {
@@ -188,7 +176,8 @@ class HabitDatabases {
 
   Future<List<Map<String, dynamic>>> getAllUsers() async {
     final results = await _connection.query(
-        'SELECT id, username, email, active_flag, phone_number, full_name FROM users');
+      'SELECT id, username, email, active_flag, phone_number, full_name FROM users',
+    );
     return results
         .map((row) => {
               'id': row['id'],
@@ -203,8 +192,10 @@ class HabitDatabases {
 
   Future<Map<String, dynamic>?> getUserProfile(int userId) async {
     final result = await _connection.query(
-        'SELECT id, username, email, active_flag, phone_number, full_name FROM users WHERE id = ?',
-        [userId]);
+      'SELECT id, username, email, active_flag, phone_number, full_name FROM users WHERE id = ?',
+      [userId],
+    );
+
     if (result.isNotEmpty) {
       final row = result.first;
       return {
