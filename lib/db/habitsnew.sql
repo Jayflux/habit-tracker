@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 23, 2025 at 07:30 PM
+-- Generation Time: Jun 24, 2025 at 02:10 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `daily_habit_percentage` (
 `user_id` int(11)
 ,`date` date
-,`percentage` decimal(31,2)
+,`percentage` decimal(28,2)
 );
 
 -- --------------------------------------------------------
@@ -52,10 +52,10 @@ CREATE TABLE `habits` (
 --
 
 INSERT INTO `habits` (`id`, `user_id`, `name`, `completed`, `date`) VALUES
-(552, 21, 'Read', 0, '2025-06-24'),
-(553, 21, 'Run', 0, '2025-06-24'),
-(554, 21, 'Ngaji', 1, '2025-06-24'),
-(555, 21, 'Mukbang', 1, '2025-06-24');
+(588, 21, 'Read', 0, '2025-06-24'),
+(589, 21, 'Run', 1, '2025-06-24'),
+(590, 21, 'Ngaji', 1, '2025-06-24'),
+(591, 21, 'Mukbang', 1, '2025-06-24');
 
 -- --------------------------------------------------------
 
@@ -89,7 +89,7 @@ INSERT INTO `users` (`id`, `username`, `email`, `password`, `active_flag`, `phon
 --
 DROP TABLE IF EXISTS `daily_habit_percentage`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `daily_habit_percentage`  AS SELECT `user_id` AS `user_id`, `date` AS `date`, round(sum(`completed`) / count(0) * 100,2) AS `percentage` FROM `habits` GROUP BY `user_id`, `date` ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `daily_habit_percentage`  AS SELECT `user_id` AS `user_id`, `date` AS `date`, round(sum(`completed`) / count(0),2) AS `percentage` FROM `habits` GROUP BY `user_id`, `date` ;
 
 --
 -- Indexes for dumped tables
@@ -118,13 +118,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `habits`
 --
 ALTER TABLE `habits`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=556;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=592;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- Constraints for dumped tables
