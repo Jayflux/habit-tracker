@@ -114,70 +114,79 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       key: _scaffoldKey,
       drawer: CustomDrawer(username: widget.username),
-      backgroundColor: Colors.white,
       floatingActionButton: MyFloatingActionButton(onPressed: createNewHabit),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                // Sidebar Icon
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 25),
-                  alignment: Alignment.centerLeft,
-                  child: Container(
-                    width: 45,
-                    height: 45,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF174E8F),
-                      borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(10),
-                        bottomRight: Radius.circular(10),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.black, Color(0xFF174E8F)],
+          ),
+        ),
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+                children: [
+                  // Sidebar Icon
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 25),
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      width: 45,
+                      height: 45,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF174E8F),
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(10),
+                          bottomRight: Radius.circular(10),
+                        ),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_forward_ios,
+                            color: Colors.white, size: 18),
+                        onPressed: () =>
+                            _scaffoldKey.currentState!.openDrawer(),
                       ),
                     ),
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_forward_ios,
-                          color: Colors.white, size: 18),
-                      onPressed: () => _scaffoldKey.currentState!.openDrawer(),
-                    ),
                   ),
-                ),
 
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: ListView(
-                      children: [
-                        MonthlySummary(
-                          datasets: db.heatMapDataSet,
-                          startDate: convertDateTimeToString(DateTime.now()),
-                        ),
-                        const SizedBox(height: 16),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: db.todaysHabitList.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 12.0),
-                              child: HabitTile(
-                                habitName: db.todaysHabitList[index][0],
-                                habitCompleted: db.todaysHabitList[index][1],
-                                onChanged: (value) =>
-                                    checkBoxTapped(value, index),
-                                settingsTapped: (context) =>
-                                    openHabitSettings(index),
-                                deleteTapped: (context) => deleteHabit(index),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: ListView(
+                        children: [
+                          MonthlySummary(
+                            datasets: db.heatMapDataSet,
+                            startDate: convertDateTimeToString(DateTime.now()),
+                          ),
+                          const SizedBox(height: 16),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: db.todaysHabitList.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 12.0),
+                                child: HabitTile(
+                                  habitName: db.todaysHabitList[index][0],
+                                  habitCompleted: db.todaysHabitList[index][1],
+                                  onChanged: (value) =>
+                                      checkBoxTapped(value, index),
+                                  settingsTapped: (context) =>
+                                      openHabitSettings(index),
+                                  deleteTapped: (context) => deleteHabit(index),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+      ),
     );
   }
 }

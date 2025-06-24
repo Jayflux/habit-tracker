@@ -18,28 +18,45 @@ class _CustomDrawerState extends State<CustomDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: const Color(0xFFE2E2E2),
+      backgroundColor: Colors.black,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 40),
+
+          // Avatar
           Container(
             margin: const EdgeInsets.only(left: 15.0),
             child: Image.asset(
               'assets/account_circle.png',
               width: 80,
               height: 80,
+              color: Colors.white, // Biar konsisten dengan tema gelap
             ),
           ),
+
           const SizedBox(height: 8),
+
+          // Username
           Container(
             margin: const EdgeInsets.only(left: 15.0),
             child: Text(
               widget.username,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
           ),
-          const Divider(thickness: 2, height: 30, color: Colors.black),
+
+          const Divider(
+            thickness: 2,
+            height: 30,
+            color: Colors.white24,
+          ),
+
+          // Menu Items
           drawerItem(iconAsset: 'assets/home.png', label: 'Home', onTap: () {}),
           drawerItem(
               iconAsset: 'assets/settings.png',
@@ -57,24 +74,24 @@ class _CustomDrawerState extends State<CustomDrawer> {
             iconAsset: 'assets/about.png',
             label: 'About Us',
             onTap: () {
-              Navigator.pop(context); // Tutup drawer terlebih dahulu
+              Navigator.pop(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const OurTeamPage(),
-                ),
+                MaterialPageRoute(builder: (context) => const OurTeamPage()),
               );
             },
           ),
+
           const Spacer(),
+
+          // Sign Out
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: const BoxDecoration(
-              border: Border(top: BorderSide(color: Colors.black12)),
+              border: Border(top: BorderSide(color: Colors.white24)),
             ),
             child: GestureDetector(
               onTap: () {
-                final db = HabitDatabases();
                 db.todaysHabitList.clear();
                 db.heatMapDataSet.clear();
 
@@ -82,17 +99,18 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => LoginPage(),
-                  ),
+                  MaterialPageRoute(builder: (context) => LoginPage()),
                 );
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: const [
-                  Text('Sign Out', style: TextStyle(color: Colors.black)),
+                  Text(
+                    'Sign Out',
+                    style: TextStyle(color: Colors.white),
+                  ),
                   SizedBox(width: 10),
-                  Icon(Icons.logout, color: Colors.red),
+                  Icon(Icons.logout, color: Colors.redAccent),
                 ],
               ),
             ),
@@ -112,8 +130,15 @@ class _CustomDrawerState extends State<CustomDrawer> {
         iconAsset,
         width: 24,
         height: 24,
+        color: Colors.white70, // agar kontras
       ),
-      title: Text(label, style: const TextStyle(fontSize: 14)),
+      title: Text(
+        label,
+        style: const TextStyle(
+          fontSize: 14,
+          color: Colors.white,
+        ),
+      ),
       onTap: onTap,
     );
   }

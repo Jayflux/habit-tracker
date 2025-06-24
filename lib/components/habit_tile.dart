@@ -23,16 +23,16 @@ class HabitTile extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: Slidable(
         endActionPane: ActionPane(
-          motion: StretchMotion(),
+          motion: const StretchMotion(),
           children: [
-            //settings
+            // Settings
             SlidableAction(
               onPressed: (context) => settingsTapped!(context),
               backgroundColor: Colors.grey.shade800,
               icon: Icons.settings,
               borderRadius: BorderRadius.circular(12),
             ),
-            //delete
+            // Delete
             SlidableAction(
               onPressed: (context) => deleteTapped!(context),
               backgroundColor: Colors.red.shade400,
@@ -44,16 +44,47 @@ class HabitTile extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: Color(0xffD0D0D0),
+            color:
+                Colors.white.withOpacity(0.1), // semi-transparan untuk kontras
             borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.white24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.25),
+                blurRadius: 6,
+                offset: const Offset(2, 4),
+              ),
+            ],
           ),
           child: Row(
             children: [
-              // checkbox
-              Checkbox(value: habitCompleted, onChanged: onChanged),
+              // Checkbox dengan warna custom
+              Theme(
+                data: Theme.of(context).copyWith(
+                  unselectedWidgetColor: Colors.white,
+                ),
+                child: Checkbox(
+                  value: habitCompleted,
+                  onChanged: onChanged,
+                  activeColor: Colors.white,
+                  checkColor: Colors.black,
+                ),
+              ),
 
-              //habit name
-              Text(habitName),
+              const SizedBox(width: 10),
+
+              // Habit name
+              Expanded(
+                child: Text(
+                  habitName,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ],
           ),
         ),

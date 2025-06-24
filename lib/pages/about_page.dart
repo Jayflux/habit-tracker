@@ -35,85 +35,101 @@ class OurTeamPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.black,
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new),
-          color: Colors.grey[800],
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
           onPressed: () {
-            Navigator.pop(context); // Kembali ke halaman sebelumnya
+            Navigator.pop(context);
           },
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Text(
-              'OUR TEAM',
-              style: TextStyle(
-                fontWeight: FontWeight.w900,
-                fontSize: 30,
-                color: Colors.black,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.black, Color(0xFF174E8F)],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                'OUR TEAM',
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 30,
+                  color: Colors.white,
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              'This Is Our Team.',
-              style: TextStyle(
-                fontSize: 20,
-                color: Color.fromARGB(255, 0, 0, 0),
+              const SizedBox(height: 4),
+              const Text(
+                'This Is Our Team.',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.white70,
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: ListView.separated(
-                itemCount: members.length,
-                separatorBuilder: (context, index) =>
-                    const SizedBox(height: 12),
-                itemBuilder: (context, index) {
-                  final member = members[index];
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF3F4F6), // Tailwind gray-100
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: const EdgeInsets.all(12),
-                    child: Row(
-                      children: [
-                        SquareTile(
-                          imagePath: member.imagePath,
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                member.name,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Color(0xFF2E3A59),
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                member.id,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Color(0xFF6B7280),
-                                ),
-                              ),
-                            ],
+              const SizedBox(height: 20),
+              Expanded(
+                child: ListView.separated(
+                  itemCount: members.length,
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final member = members[index];
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.white24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 4,
+                            offset: const Offset(2, 3),
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                        ],
+                      ),
+                      padding: const EdgeInsets.all(12),
+                      child: Row(
+                        children: [
+                          SquareTile(imagePath: member.imagePath),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  member.name,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  member.id,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.white60,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
