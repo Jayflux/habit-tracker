@@ -4,6 +4,7 @@ import 'package:habit_tracker/components/my_button.dart';
 import 'package:habit_tracker/components/my_textfield.dart';
 import 'package:habit_tracker/components/square_tile.dart';
 import 'package:habit_tracker/data/habit_databases.dart';
+import 'package:habit_tracker/pages/splash_after_login.dart';
 import 'package:habit_tracker/pages/admin/admin_home_page.dart';
 import 'package:habit_tracker/pages/home_page.dart';
 import 'package:habit_tracker/pages/register_page.dart';
@@ -40,7 +41,7 @@ class LoginPage extends StatelessWidget {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) => HomePage(
+            builder: (_) => SplashAfterLoginPage(
               userId: user['id'],
               username: user['username'],
             ),
