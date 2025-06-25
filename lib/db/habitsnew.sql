@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 24, 2025 at 02:10 PM
+-- Generation Time: Jun 25, 2025 at 06:33 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -52,10 +52,16 @@ CREATE TABLE `habits` (
 --
 
 INSERT INTO `habits` (`id`, `user_id`, `name`, `completed`, `date`) VALUES
-(588, 21, 'Read', 0, '2025-06-24'),
-(589, 21, 'Run', 1, '2025-06-24'),
-(590, 21, 'Ngaji', 1, '2025-06-24'),
-(591, 21, 'Mukbang', 1, '2025-06-24');
+(624, 21, 'Read', 0, '2025-06-24'),
+(625, 21, 'Run', 1, '2025-06-24'),
+(626, 21, 'Ngaji', 1, '2025-06-24'),
+(627, 21, 'Mukbang', 1, '2025-06-24'),
+(686, 34, 'Read', 0, '2025-06-25'),
+(687, 34, 'Run', 0, '2025-06-25'),
+(688, 21, 'Read', 1, '2025-06-25'),
+(689, 21, 'Run', 0, '2025-06-25'),
+(690, 21, 'Ngaji', 1, '2025-06-25'),
+(691, 21, 'Mukbang', 1, '2025-06-25');
 
 -- --------------------------------------------------------
 
@@ -80,7 +86,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `active_flag`, `phone_number`, `full_name`, `start_date`) VALUES
 (3, 'admin', 'admin@gmail.com', 'admin123', 1, NULL, NULL, NULL),
-(21, 'juan', 'juan@gmail.com', 'juan123', 1, '081808927665', 'juan', '2025-06-24');
+(21, 'juan', 'juan@gmail.com', 'juan123', 1, '081808927665', 'juan', '2025-06-24'),
+(34, 'alex', 'alex@mahasiswa.upnvj.ac.id', 'alex123', 1, '081808881234', 'Alex Iyowau', '2025-06-25');
 
 -- --------------------------------------------------------
 
@@ -118,13 +125,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `habits`
 --
 ALTER TABLE `habits`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=592;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=692;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- Constraints for dumped tables

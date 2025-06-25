@@ -62,91 +62,84 @@ class RegisterPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 50),
-                Image.asset(
-                  'assets/habit.png',
-                  height: 100,
-                ),
-                const SizedBox(height: 50),
-                Text(
-                  'Create an account',
-                  style: TextStyle(
-                    color: Colors.grey[700],
-                    fontSize: 16,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 25),
+              child: Column(
+                children: [
+                  const SizedBox(height: 30),
+                  Image.asset('assets/habit.png', height: 100),
+                  const SizedBox(height: 30),
+                  Text(
+                    'Create an account',
+                    style: TextStyle(color: Colors.grey[700], fontSize: 16),
                   ),
-                ),
-                const SizedBox(height: 25),
-                MyTextField(
-                  controller: usernameController,
-                  hintText: 'Username',
-                  obscureText: false,
-                ),
-                const SizedBox(height: 10),
-                MyTextField(
-                  controller: emailController,
-                  hintText: 'Email',
-                  obscureText: false,
-                ),
-                const SizedBox(height: 10),
-                MyTextField(
-                  controller: phoneNumberController,
-                  hintText: 'Phone Number',
-                  obscureText: false,
-                ),
-                const SizedBox(height: 10),
-                MyTextField(
-                  controller: fullNameController,
-                  hintText: 'Full Name',
-                  obscureText: false,
-                ),
-                const SizedBox(height: 10),
-                MyTextField(
-                  controller: passwordController,
-                  hintText: 'Password',
-                  obscureText: true,
-                ),
-                const SizedBox(height: 10),
-                MyTextField(
-                  controller: confirmPasswordController,
-                  hintText: 'Confirm Password',
-                  obscureText: true,
-                ),
-                const SizedBox(height: 25),
-                MyButton(
-                  onTap: () => registerUser(context),
-                ),
-                const SizedBox(height: 50),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Already have an account?',
-                      style: TextStyle(color: Colors.grey[700]),
-                    ),
-                    const SizedBox(width: 4),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text(
-                        'Login',
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
-                        ),
+                  const SizedBox(height: 20),
+                  MyTextField(
+                      controller: usernameController,
+                      hintText: 'Username',
+                      obscureText: false),
+                  const SizedBox(height: 10),
+                  MyTextField(
+                      controller: emailController,
+                      hintText: 'Email',
+                      obscureText: false),
+                  const SizedBox(height: 10),
+                  MyTextField(
+                      controller: phoneNumberController,
+                      hintText: 'Phone Number',
+                      obscureText: false),
+                  const SizedBox(height: 10),
+                  MyTextField(
+                      controller: fullNameController,
+                      hintText: 'Full Name',
+                      obscureText: false),
+                  const SizedBox(height: 10),
+                  MyTextField(
+                      controller: passwordController,
+                      hintText: 'Password',
+                      obscureText: true),
+                  const SizedBox(height: 10),
+                  MyTextField(
+                      controller: confirmPasswordController,
+                      hintText: 'Confirm Password',
+                      obscureText: true),
+                  const SizedBox(height: 25),
+                  MyButton(onTap: () => registerUser(context)),
+                  const SizedBox(
+                      height: 100), // Beri ruang agar tidak tertutup row
+                ],
+              ),
+            ),
+            // Posisi fixed di bawah
+            Positioned(
+              bottom: 20,
+              left: 0,
+              right: 0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Already have an account?',
+                      style: TextStyle(color: Colors.grey[700])),
+                  const SizedBox(width: 4),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      'Login',
+                      style: TextStyle(
+                        color: Colors.blue,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ],
-                )
-              ],
-            ),
-          ),
+                  ),
+                ],
+              ),
+            )
+          ],
         ),
       ),
     );
