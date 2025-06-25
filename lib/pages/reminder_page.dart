@@ -1,31 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:habit_tracker/data/habit_databases.dart';
-import 'package:habit_tracker/datetime/date_time.dart'; // pastikan import ini
+import 'package:habit_tracker/datetime/date_time.dart';
 
-class HistoryPage extends StatefulWidget {
+class ReminderPage extends StatefulWidget {
   final int userId;
 
-  const HistoryPage({super.key, required this.userId});
+  const ReminderPage({super.key, required this.userId});
 
   @override
-  State<HistoryPage> createState() => _HistoryPageState();
+  State<ReminderPage> createState() => _ReminderPageState();
 }
 
-class _HistoryPageState extends State<HistoryPage> {
+class _ReminderPageState extends State<ReminderPage> {
   final HabitDatabases db = HabitDatabases();
-  Map<String, List<String>> historyData = {};
+  Map<String, List<String>> reminderData = {};
 
   @override
   void initState() {
     super.initState();
-    fetchHistory();
+    fetchReminders();
   }
 
-  Future<void> fetchHistory() async {
+  Future<void> fetchReminders() async {
     await db.init();
-    final results = await db.getCompletedHabitsByUser(widget.userId);
+    final today = DateTime.now();
+    final tomorrow = today.add(const Duration(days: 1));
+
+    final todayStr = convertDateTimeToString(today);
+    final tomorrowStr = convertDateTimeToString(tomorrow);
+
+    final todayHabits =
+        await db.getIncompleteHabitsByDate(widget.userId, todayStr);
+    final tomorrowHabits = await db.getHabitsForTomorrow(widget.userId);
+
     setState(() {
-      historyData = results;
+      reminderData = {
+        'Today - ${formatDateLabel(today)}': todayHabits,
+        'Tomorrow - ${formatDateLabel(tomorrow)}': tomorrowHabits,
+      };
     });
   }
 
@@ -34,7 +46,7 @@ class _HistoryPageState extends State<HistoryPage> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('History', style: TextStyle(color: Colors.white)),
+        title: const Text('Reminders', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
@@ -48,26 +60,16 @@ class _HistoryPageState extends State<HistoryPage> {
             colors: [Colors.black, Color(0xFF174E8F)],
           ),
         ),
-        child: historyData.isEmpty
+        child: reminderData.isEmpty
             ? const Center(
-                child: Text('No history available.',
+                child: Text('No pending habits.',
                     style: TextStyle(color: Colors.white)),
               )
             : ListView(
                 padding: const EdgeInsets.fromLTRB(16, 100, 16, 16),
-                children: historyData.entries.map((entry) {
-                  final rawDate = entry.key;
+                children: reminderData.entries.map((entry) {
+                  final label = entry.key;
                   final habits = entry.value;
-
-                  // Format tanggal agar lebih rapi
-                  String formattedDate;
-                  try {
-                    final dateTime = DateTime.parse(rawDate);
-                    formattedDate =
-                        formatDateLabel(dateTime); // ex: Wed, Jun 25
-                  } catch (_) {
-                    formattedDate = rawDate; // fallback
-                  }
 
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,7 +82,7 @@ class _HistoryPageState extends State<HistoryPage> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          formattedDate,
+                          label,
                           style: const TextStyle(color: Colors.white),
                         ),
                       ),
@@ -97,8 +99,8 @@ class _HistoryPageState extends State<HistoryPage> {
                           children: habits.map((habit) {
                             return Row(
                               children: [
-                                const Icon(Icons.check_box,
-                                    color: Colors.lightGreenAccent),
+                                const Icon(Icons.check_box_outline_blank,
+                                    color: Colors.grey),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
@@ -113,7 +115,7 @@ class _HistoryPageState extends State<HistoryPage> {
                             );
                           }).toList(),
                         ),
-                      )
+                      ),
                     ],
                   );
                 }).toList(),

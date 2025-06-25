@@ -17,8 +17,37 @@ String convertDateTimeToString(DateTime dateTime) {
   return '$year-$month-$day';
 }
 
-// Fungsi ini opsional, tapi jika tetap ingin menerima String:
 // Mengubah string yyyy-MM-dd ke DateTime object
 DateTime createDateTimeObject(String dateString) {
-  return DateTime.parse(dateString); // Asumsikan format yyyy-MM-dd
+  return DateTime.parse(dateString); // Format harus yyyy-MM-dd
+}
+
+// ✅ Format custom: Rabu, Jun 25 → untuk label hari
+String formatDateLabel(DateTime date) {
+  return "${_getWeekday(date.weekday)}, ${_getMonth(date.month)} ${date.day}";
+}
+
+// Helper untuk nama hari
+String _getWeekday(int weekday) {
+  const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  return weekdays[weekday - 1];
+}
+
+// Helper untuk nama bulan
+String _getMonth(int month) {
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec'
+  ];
+  return months[month - 1];
 }

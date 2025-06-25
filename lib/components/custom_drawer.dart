@@ -3,7 +3,7 @@ import 'package:habit_tracker/data/habit_databases.dart';
 import 'package:habit_tracker/pages/login_page.dart';
 import 'package:habit_tracker/pages/about_page.dart';
 import 'package:habit_tracker/pages/history_page.dart';
-// import 'package:habit_tracker/pages/reminder_page.dart';
+import 'package:habit_tracker/pages/reminder_page.dart';
 
 class CustomDrawer extends StatefulWidget {
   final String username;
@@ -83,7 +83,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
             iconData: Icons.notifications,
             label: 'Reminder',
             onTap: () {
-              // Navigator.push(context, MaterialPageRoute(builder: (context) => ReminderPage(userId: widget.userId)));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          ReminderPage(userId: widget.userId)));
             },
           ),
           drawerItem(

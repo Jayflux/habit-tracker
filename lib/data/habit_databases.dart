@@ -228,7 +228,6 @@ class HabitDatabases {
     }
   }
 
-  // ✅ Digunakan oleh HistoryPage untuk menarik kebiasaan yang sudah diselesaikan user
   Future<Map<String, List<String>>> getCompletedHabitsByUser(int userId) async {
     final results = await _connection.query(
       '''
@@ -243,7 +242,7 @@ class HabitDatabases {
     Map<String, List<String>> historyMap = {};
 
     for (var row in results) {
-      final dateStr = row['date'].toString(); // yyyy-MM-dd
+      final dateStr = row['date'].toString();
       final name = row['name'].toString();
 
       if (!historyMap.containsKey(dateStr)) {
@@ -253,5 +252,35 @@ class HabitDatabases {
     }
 
     return historyMap;
+  }
+
+  Future<List<String>> getIncompleteHabitsByDate(
+      int userId, String date) async {
+    final result = await _connection.query(
+      'SELECT name FROM habits WHERE user_id = ? AND date = ? AND completed = 0',
+      [userId, date],
+    );
+    return result.map((row) => row['name'].toString()).toList();
+  }
+
+  Future<List<String>> getHabitsForTomorrow(int userId) async {
+    String tomorrowDate =
+        convertDateTimeToString(DateTime.now().add(Duration(days: 1)));
+
+    final result = await _connection.query(
+      'SELECT name FROM habits WHERE user_id = ? AND date = ? AND completed = 0',
+      [userId, tomorrowDate],
+    );
+
+    if (result.isNotEmpty) {
+      return result.map((row) => row['name'].toString()).toList();
+    }
+
+    final fallbackResult = await _connection.query(
+      'SELECT DISTINCT name FROM habits WHERE user_id = ? ORDER BY id ASC',
+      [userId],
+    );
+
+    return fallbackResult.map((row) => row['name'].toString()).toList();
   }
 }
