@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:habit_tracker/data/habit_databases.dart';
 import 'package:habit_tracker/pages/login_page.dart';
 import 'package:habit_tracker/pages/about_page.dart';
+import 'package:habit_tracker/pages/history_page.dart';
+// import 'package:habit_tracker/pages/reminder_page.dart';
 
 class CustomDrawer extends StatefulWidget {
   final String username;
+  final int userId; // Tambahkan userId untuk navigasi ke history/reminder
 
-  const CustomDrawer({super.key, required this.username});
+  const CustomDrawer({super.key, required this.username, required this.userId});
 
   @override
   State<CustomDrawer> createState() => _CustomDrawerState();
@@ -25,21 +28,20 @@ class _CustomDrawerState extends State<CustomDrawer> {
           const SizedBox(height: 40),
 
           // Avatar
-          Container(
-            margin: const EdgeInsets.only(left: 15.0),
-            child: Image.asset(
-              'assets/account_circle.png',
-              width: 80,
-              height: 80,
-              color: Colors.white, // Biar konsisten dengan tema gelap
+          const Padding(
+            padding: EdgeInsets.only(left: 15.0),
+            child: Icon(
+              Icons.account_circle,
+              size: 80,
+              color: Colors.white,
             ),
           ),
 
           const SizedBox(height: 8),
 
           // Username
-          Container(
-            margin: const EdgeInsets.only(left: 15.0),
+          Padding(
+            padding: const EdgeInsets.only(left: 15.0),
             child: Text(
               widget.username,
               style: const TextStyle(
@@ -57,21 +59,39 @@ class _CustomDrawerState extends State<CustomDrawer> {
           ),
 
           // Menu Items
-          drawerItem(iconAsset: 'assets/home.png', label: 'Home', onTap: () {}),
           drawerItem(
-              iconAsset: 'assets/settings.png',
-              label: 'Settings',
-              onTap: () {}),
+              iconData: Icons.home,
+              label: 'Home',
+              onTap: () {
+                Navigator.pop(context); // kembalikan ke Home
+              }),
+          drawerItem(iconData: Icons.settings, label: 'Settings', onTap: () {}),
           drawerItem(
-              iconAsset: 'assets/user.png',
-              label: 'Invite Friend',
-              onTap: () {}),
+            iconData: Icons.history,
+            label: 'History',
+            onTap: () {
+              Navigator.pop(context); // tutup drawer dulu
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HistoryPage(userId: widget.userId),
+                ),
+              );
+            },
+          ),
           drawerItem(
-              iconAsset: 'assets/share.png',
-              label: 'Rate the App',
-              onTap: () {}),
+            iconData: Icons.notifications,
+            label: 'Reminder',
+            onTap: () {
+              // Navigator.push(context, MaterialPageRoute(builder: (context) => ReminderPage(userId: widget.userId)));
+            },
+          ),
           drawerItem(
-            iconAsset: 'assets/about.png',
+              iconData: Icons.person_add, label: 'Invite Friend', onTap: () {}),
+          drawerItem(
+              iconData: Icons.share, label: 'Rate the App', onTap: () {}),
+          drawerItem(
+            iconData: Icons.info_outline,
             label: 'About Us',
             onTap: () {
               Navigator.pop(context);
@@ -95,7 +115,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 db.todaysHabitList.clear();
                 db.heatMapDataSet.clear();
 
-                setState(() {});
+                setState(() {}); // opsional, hanya jika perlu refresh
 
                 Navigator.pushReplacement(
                   context,
@@ -105,10 +125,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: const [
-                  Text(
-                    'Sign Out',
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  Text('Sign Out', style: TextStyle(color: Colors.white)),
                   SizedBox(width: 10),
                   Icon(Icons.logout, color: Colors.redAccent),
                 ],
@@ -121,23 +138,15 @@ class _CustomDrawerState extends State<CustomDrawer> {
   }
 
   Widget drawerItem({
-    required String iconAsset,
+    required IconData iconData,
     required String label,
     required VoidCallback onTap,
   }) {
     return ListTile(
-      leading: Image.asset(
-        iconAsset,
-        width: 24,
-        height: 24,
-        color: Colors.white70, // agar kontras
-      ),
+      leading: Icon(iconData, color: Colors.white70),
       title: Text(
         label,
-        style: const TextStyle(
-          fontSize: 14,
-          color: Colors.white,
-        ),
+        style: const TextStyle(fontSize: 14, color: Colors.white),
       ),
       onTap: onTap,
     );

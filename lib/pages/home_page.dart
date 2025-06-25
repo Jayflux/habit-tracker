@@ -6,7 +6,6 @@ import "package:habit_tracker/components/my_fab.dart";
 import "package:habit_tracker/components/my_alert_box.dart";
 import "package:habit_tracker/data/habit_databases.dart";
 import 'package:habit_tracker/datetime/date_time.dart';
-import 'package:habit_tracker/pages/about_page.dart';
 
 class HomePage extends StatefulWidget {
   final int userId;
@@ -113,7 +112,10 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      drawer: CustomDrawer(username: widget.username),
+      drawer: CustomDrawer(
+        username: widget.username,
+        userId: widget.userId,
+      ),
       floatingActionButton: MyFloatingActionButton(onPressed: createNewHabit),
       body: Container(
         decoration: const BoxDecoration(

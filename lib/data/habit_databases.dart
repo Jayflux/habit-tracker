@@ -1,4 +1,3 @@
-// lib/data/habit_databases.dart
 import 'package:habit_tracker/datetime/date_time.dart';
 import 'package:mysql1/mysql1.dart';
 
@@ -30,7 +29,6 @@ class HabitDatabases {
 
     final startDate = todaysDateFormatted();
 
-    // Cek apakah data habit untuk hari ini sudah ada
     final checkHabit = await _connection.query(
       'SELECT 1 FROM habits WHERE user_id = ? AND date = ?',
       [userId, startDate],
@@ -83,7 +81,6 @@ class HabitDatabases {
   }
 
   Future<void> loadHeatMap(int userId) async {
-    // Ambil start_date dari tabel users
     final startDateResult = await _connection.query(
       'SELECT start_date FROM users WHERE id = ?',
       [userId],
@@ -91,11 +88,9 @@ class HabitDatabases {
 
     if (startDateResult.isEmpty) return;
 
-    // Ambil nilai dari hasil query
     final rawDate = startDateResult.first[0];
     late DateTime startDate;
 
-    // Deteksi apakah tipe data hasil query sudah DateTime atau String
     if (rawDate is DateTime) {
       startDate = rawDate;
     } else if (rawDate is String) {
@@ -107,13 +102,10 @@ class HabitDatabases {
 
     int daysInBetween = DateTime.now().difference(startDate).inDays;
 
-    // Iterasi dari startDate hingga hari ini
     for (int i = 0; i <= daysInBetween; i++) {
       DateTime currentDate = startDate.add(Duration(days: i));
-      String dateStr =
-          convertDateTimeToString(currentDate); // format: yyyy-MM-dd
+      String dateStr = convertDateTimeToString(currentDate);
 
-      // Ambil persentase dari VIEW daily_habit_percentage
       final percentResult = await _connection.query(
         'SELECT percentage FROM daily_habit_percentage WHERE date = ? AND user_id = ?',
         [dateStr, userId],
@@ -234,5 +226,32 @@ class HabitDatabases {
       print('Error updating active status: $e');
       return false;
     }
+  }
+
+  // ✅ Digunakan oleh HistoryPage untuk menarik kebiasaan yang sudah diselesaikan user
+  Future<Map<String, List<String>>> getCompletedHabitsByUser(int userId) async {
+    final results = await _connection.query(
+      '''
+      SELECT name, date
+      FROM habits
+      WHERE user_id = ? AND completed = 1
+      ORDER BY date DESC
+      ''',
+      [userId],
+    );
+
+    Map<String, List<String>> historyMap = {};
+
+    for (var row in results) {
+      final dateStr = row['date'].toString(); // yyyy-MM-dd
+      final name = row['name'].toString();
+
+      if (!historyMap.containsKey(dateStr)) {
+        historyMap[dateStr] = [];
+      }
+      historyMap[dateStr]!.add(name);
+    }
+
+    return historyMap;
   }
 }
